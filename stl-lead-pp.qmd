@@ -2,10 +2,44 @@
 title: "stl-lead-pp"
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+```{r}
+library(tidyverse)
+library(janitor)
+```
 
 ```{r}
-1 + 1
+stl_lead <- read_csv(here::here("data", "stl_lead.csv")) %>%  
+  clean_names()
 ```
+
+```{r}
+stl_lead_prop <- stl_lead %>%  dplyr::mutate(prop_white = (white / total_pop) *100)
+```
+
+```{r}
+stl_lead_scatterplot <- ggplot(data = stl_lead_prop, 
+                               aes(x = pct_elevated, 
+                                   y = prop_white)) + 
+  geom_jitter(aes(size = pct_elevated, 
+                 alpha = 0.5, 
+                 colour = pct_elevated)) + 
+  scale_colour_gradient(low = "red" ,high = "blue")
+stl_lead_scatterplot
+
+ggsave("stl_lead_plot.png", path = "figs", width = 6, height = 5)
+```
+
+Most of the white population do not have elevated pct. a small part of the white population has elevated pct.
+
+```{r}
+#histogram
+stl_lead_histogram <- ggplot(data = stl_lead_prop, 
+                             aes(x = pct_elevated)) + 
+  geom_histogram(fill = "blue") + 
+  labs(x = "PCT elevated", y = "count", title = "spread of ptc elevation")
+stl_lead_histogram
+ggsave("stl_lead_histogram.jpg", path = "figs", width = 6, height = 5)
+```
+
+
+
